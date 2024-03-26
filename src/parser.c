@@ -4,7 +4,7 @@
 
 #include "parser.h"
 
-static void d_add(char* cval, const char d) {
+static void d_add(unsigned char* cval, const char d) {
     switch (d) {
         case 'N':
             *cval += 0b00001000;
@@ -21,7 +21,7 @@ static void d_add(char* cval, const char d) {
     }
 }
 
-static int cell_encode(char* cval, const char d, const char dval) {
+static int cell_encode(unsigned char* cval, const char d, const char dval) {
     if (!(d == 'N' || d == 'E' || d == 'S' || d == 'W'))
         return 2;
     switch (dval) {
@@ -62,13 +62,15 @@ static int flenleft(FILE* in, char buf[BUFSIZE]) {
     return len;
 }
 
-enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
+FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CODE *err) {
     enum PARSE_MAZE_RETURN_CODE ret = OK;
 
     FILE* in = fopen(filename, "r");
-    if (in == NULL)
-        return INPUT_CANT_BE_OPENED;
-    FILE* ou = fopen("/tmp/savior.limewater", "w");
+    if (in == NULL) {
+        ret = INPUT_CANT_BE_OPENED;
+        goto out;
+    }
+    FILE* ou = fopen(MAZE_DATA_FILENAME, "rw+");
     if (ou == NULL) {
         ret = OUTPUT_CANT_BE_OPENED;
         goto out_close_input;
@@ -80,13 +82,13 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
 
     if (fgets(b, BUFSIZE, in) == NULL) {
         ret = INPUT_READ_ERROR;
-        goto out_close_all;
+        goto out_close_input;
     }
     m->width = strlen(b) / 2 - 1;
     m->height = flenleft(in, b) / 2;
     if (m->height <= 0 || m->width <= 0) {
         ret = INPUT_INVALID;
-        goto out_close_all;
+        goto out_close_input;
     }
     rewind(in);
 
@@ -98,12 +100,12 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
     // load initial data into the buffers
     if (fgets(bnext, BUFSIZE, in) == NULL) {
         ret = INPUT_READ_ERROR;
-        goto out_close_all;
+        goto out_close_input;
     }
     strcpy(bprev, bnext);
     if (fgets(bnext, BUFSIZE, in) == NULL) {
         ret = INPUT_READ_ERROR;
-        goto out_close_all;
+        goto out_close_input;
     }
     strcpy(b, bnext);
     b_i++;
@@ -111,7 +113,7 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
     while (fgets(bnext, BUFSIZE, in) != NULL) {
         if (ferror(in)) {
             ret = INPUT_READ_ERROR;
-            goto out_close_all;
+            goto out_close_input;
         }
         if (b_i % 2 == 1) {
             /* printf("bprev: \t\t%sb: \t\t%sbnext: \t\t%s\n", bprev, b, bnext); */
@@ -119,10 +121,10 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
                 if (b_j % 2 == 0)
                     continue;
 
-                char cell = b[b_j];
+                unsigned char cell = b[b_j];
                 if (cell != ' ') {
                     ret = INPUT_INVALID;
-                    goto out_close_all;
+                    goto out_close_input;
                 }
                 cell = 0;
                 const char adjN = bprev[b_j];
@@ -136,13 +138,13 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
                 ret = cell_encode(&cell, 'W', adjW);
                 if (ret != 0) {
                     ret = INPUT_INVALID;
-                    goto out_close_all;
+                    goto out_close_input;
                 }
 
                 fputc(cell, ou);
                 if (ferror(ou)) {
                     ret = OUTPUT_WRITE_ERROR;
-                    goto out_close_all;
+                    goto out_close_input;
                 }
                 maze_j++;
             }
@@ -157,10 +159,55 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename, struct maze* m) {
         b_i++;
     }
 
-out_close_all:
-    fclose(ou);
 out_close_input:
     fclose(in);
+out:
+    *err = ret;
+    return ou;
+}
 
+enum PARSE_MAZE_RETURN_CODE get_cell_data(FILE *data, const int index, unsigned char* cell_data) {
+    enum PARSE_MAZE_RETURN_CODE ret = OK;
+
+
+    if(data == NULL) {
+        ret = OUTPUT_CANT_BE_OPENED;
+        goto close;
+    }
+
+    if(fseek(data, index, SEEK_SET) != 0) {
+        ret = OUTPUT_READ_ERROR;
+        goto close;
+    }
+    *cell_data = fgetc(data);
+    if(*cell_data == EOF)
+    {
+        ret = OUTPUT_READ_ERROR;
+        goto close;
+    }
+
+
+close:
+    return ret;
+}
+
+enum PARSE_MAZE_RETURN_CODE set_cell_parent(FILE *data, const int index, const enum DIRECTIONS parent) {
+    enum PARSE_MAZE_RETURN_CODE ret = OK;
+
+    if(fseek(data, index, SEEK_SET) != 0) {
+        ret = OUTPUT_WRITE_ERROR;
+        goto close;
+    }
+    unsigned char cell_data = fgetc(data);
+    cell_data += parent << 4;
+
+    fseek(data, index, SEEK_SET);
+    fputc(cell_data, data);
+    if(ferror(data)) {
+        ret = OUTPUT_WRITE_ERROR;
+        goto close;
+    }
+
+close:
     return ret;
 }
