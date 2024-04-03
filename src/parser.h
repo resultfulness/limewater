@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #define BUFSIZE 1024*2+1
-#define TEMP_FILE_PATH "/tmp/tmp.limewater"
 
 struct maze { int width; int height; };
 
@@ -44,7 +43,6 @@ int get_cell_data(FILE *data, const int index, char* cell_data);
 int set_cell_parent(FILE *data, const int index, enum PARENT_DIRECTION parent);
 void print_parse_maze_err(enum PARSE_MAZE_RETURN_CODE ret,
                           char* scriptname,
-                          char* input_fn,
-                          char* output_fn);
+                          char* input_fn);
 
 #endif

@@ -1,34 +1,34 @@
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "parser.h"
 
 int main(int argc, char** argv) {
     int ret = 0;
-    char* input_fn = argc > 1 ? argv[1] : "data/16.txt";
+    char* in_filename = argc > 1 ? argv[1] : "data/16.txt";
     struct maze* maze = malloc(sizeof(struct maze));
     if (maze == NULL) {
         fprintf(stderr, "%s: nie udało się alokować pamięci\n", argv[0]);
         ret = 1;
         goto out;
     }
-    FILE* tmp = fopen(TEMP_FILE_PATH, "w+");
-    if (tmp == NULL) {
+    FILE* tmpf = tmpfile();
+    if (tmpf == NULL) {
         fprintf(stderr,
-                "%s: nie udało się otworzyć pliku '%s'\n",
-                argv[0],
-                TEMP_FILE_PATH);
+                "%s: nie udało się otworzyć pliku tymczasowego'\n",
+                argv[0]);
         ret = 1;
         goto out_free_maze;
     }
-    ret = parse_maze(input_fn, maze, tmp);
+    ret = parse_maze(in_filename, maze, tmpf);
     if (ret != 0) {
-        print_parse_maze_err(ret, argv[0], input_fn, TEMP_FILE_PATH);
+        print_parse_maze_err(ret, argv[0], in_filename);
         ret = 1;
         goto out_close_tmp;
     }
 
 out_close_tmp:
-    fclose(tmp);
+    fclose(tmpf);
 out_free_maze:
     free(maze);
 out:
