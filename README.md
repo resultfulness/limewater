@@ -1,16 +1,15 @@
-the plan is as follows
+# maze solving
 
-store each cell as an 8 bit value:
+## building
 
-   P   K   p   q   n   e   w   s
+```bash
+make
+```
 
-where:
-* P is whether the cell is the start cell
-* K is whether the cell is the end cell
-* p and q store parent info - parent is at:
-  - 00 S
-  - 01 E
-  - 10 W
-  - 11 N
-* n, e, w and s store connection info
+## running
 
+```bash
+./limewater MAZEFILE
+```
+
+example mazefiles can be found in the `data/` directory
