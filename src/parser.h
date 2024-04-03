@@ -28,5 +28,8 @@ enum DIRECTIONS {
 FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CODE *err);
 enum PARSE_MAZE_RETURN_CODE get_cell_data(FILE *data, const int index, unsigned char* cell_data);
 enum PARSE_MAZE_RETURN_CODE set_cell_parent(FILE *data, const int index, const enum DIRECTIONS parent);
+enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
+                                       struct maze* m,
+                                       FILE* tmp_file);
 
 #endif

@@ -62,7 +62,9 @@ static int flenleft(FILE* in, char buf[BUFSIZE]) {
     return len;
 }
 
-FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CODE *err) {
+enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
+                                   struct maze* m,
+                                   FILE* tmp_file) {
     enum PARSE_MAZE_RETURN_CODE ret = OK;
 
     FILE* in = fopen(filename, "r");
@@ -70,8 +72,7 @@ FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CO
         ret = INPUT_CANT_BE_OPENED;
         goto out;
     }
-    FILE* ou = fopen(MAZE_DATA_FILENAME, "rw+");
-    if (ou == NULL) {
+    if (tmp_file == NULL) {
         ret = OUTPUT_CANT_BE_OPENED;
         goto out_close_input;
     }
@@ -162,8 +163,7 @@ FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CO
 out_close_input:
     fclose(in);
 out:
-    *err = ret;
-    return ou;
+    return ret;
 }
 
 enum PARSE_MAZE_RETURN_CODE get_cell_data(FILE *data, const int index, unsigned char* cell_data) {
