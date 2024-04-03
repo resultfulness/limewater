@@ -208,6 +208,50 @@ enum PARSE_MAZE_RETURN_CODE set_cell_parent(FILE *data, const int index, const e
         goto close;
     }
 
-close:
-    return ret;
+    return 0;
+}
+
+void print_parse_maze_err(enum PARSE_MAZE_RETURN_CODE ret,
+                          char* scriptname,
+                          char* input_fn,
+                          char* output_fn) {
+    switch (ret) {
+        case INPUT_INVALID:
+            fprintf(stderr,
+                    "%s: plik '%s' jest w błędnym formacie\n",
+                    scriptname,
+                    input_fn);
+            break;
+        case INPUT_CANT_BE_OPENED:
+            fprintf(stderr,
+                    "%s: nie udało się otworzyć pliku '%s'\n",
+                    scriptname,
+                    input_fn);
+            break;
+        case INPUT_READ_ERROR:
+            fprintf(stderr,
+                    "%s: wystąpił błąd podczas odczytywania pliku '%s'\n",
+                    scriptname,
+                    input_fn);
+            break;
+        case OUTPUT_CANT_BE_OPENED:
+            fprintf(stderr,
+                    "%s: nie udało się otworzyć pliku tymczasowego '%s'\n",
+                    scriptname,
+                    output_fn);
+            break;
+        case OUTPUT_READ_ERROR: break;
+            fprintf(stderr,
+                    "%s: wystąpił błąd podczas odczytywania pliku tymczasowego '%s'\n",
+                    scriptname,
+                    output_fn);
+        case OUTPUT_WRITE_ERROR:
+            fprintf(stderr,
+                    "%s: wystąpił błąd podczas zapisywania do pliku tymczasowego '%s'\n",
+                    scriptname,
+                    output_fn);
+            break;
+        case OK:
+            break;
+    }
 }
