@@ -4,44 +4,37 @@
 
 #include "parser.h"
 
-static void d_add(unsigned char* cval, const char d) {
-    switch (d) {
-        case 'N':
-            *cval += 0b00001000;
-            break;
-        case 'E':
-            *cval += 0b00000100;
-            break;
-        case 'W':
-            *cval += 0b00000010;
-            break;
-        case 'S':
-            *cval += 0b00000001;
-            break;
-    }
-}
-
-static int cell_encode(unsigned char* cval, const char d, const char dval) {
-    if (!(d == 'N' || d == 'E' || d == 'S' || d == 'W'))
-        return 2;
-    switch (dval) {
+static int cell_handle_adj(char* cval, const char adj, enum DIRECTION d) {
+    switch (adj) {
         case 'X':
             break;
         case ' ':
-            d_add(cval, d);
+            *cval += d;
             break;
         case 'P':
-            *cval += 0b10000000;
-            d_add(cval, d);
+            *cval += START_ENCODE_VALUE;
             break;
         case 'K':
-            *cval += 0b01000000;
-            d_add(cval, d);
+            *cval += END_ENCODE_VALUE;
             break;
         default:
             return 1;
     }
     return 0;
+}
+
+static int cell_encode(char* cval,
+                       const char n,
+                       const char e,
+                       const char s,
+                       const char w) {
+    /* _Bool won't go past 1 no matter what */
+    _Bool ret = 0;
+    ret += cell_handle_adj(cval, n, NORTH);
+    ret += cell_handle_adj(cval, e, EAST);
+    ret += cell_handle_adj(cval, s, SOUTH);
+    ret += cell_handle_adj(cval, w, WEST);
+    return ret;
 }
 
 static int flenleft(FILE* in, char buf[BUFSIZE]) {
@@ -117,33 +110,26 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
             goto out_close_input;
         }
         if (b_i % 2 == 1) {
-            /* printf("bprev: \t\t%sb: \t\t%sbnext: \t\t%s\n", bprev, b, bnext); */
             for (b_j = 0, maze_j = 0; b_j < strlen(b) - 1; b_j++) {
                 if (b_j % 2 == 0)
                     continue;
-
-                unsigned char cell = b[b_j];
-                if (cell != ' ') {
+                if (b[b_j] != ' ') {
                     ret = INPUT_INVALID;
                     goto out_close_input;
                 }
-                cell = 0;
+                char cell = 0;
                 const char adjN = bprev[b_j];
                 const char adjE = b[b_j + 1];
                 const char adjS = bnext[b_j];
                 const char adjW = b[b_j - 1];
-                char ret;
-                ret = cell_encode(&cell, 'N', adjN);
-                ret = cell_encode(&cell, 'E', adjE);
-                ret = cell_encode(&cell, 'S', adjS);
-                ret = cell_encode(&cell, 'W', adjW);
+                ret = cell_encode(&cell, adjN, adjE, adjS, adjW);
                 if (ret != 0) {
                     ret = INPUT_INVALID;
                     goto out_close_input;
                 }
 
-                fputc(cell, ou);
-                if (ferror(ou)) {
+                fputc(cell, tmp_file);
+                if (ferror(tmp_file)) {
                     ret = OUTPUT_WRITE_ERROR;
                     goto out_close_input;
                 }
@@ -166,47 +152,36 @@ out:
     return ret;
 }
 
-enum PARSE_MAZE_RETURN_CODE get_cell_data(FILE *data, const int index, unsigned char* cell_data) {
-    enum PARSE_MAZE_RETURN_CODE ret = OK;
+int get_cell_data(FILE* data,
+                  const int index,
+                  char* cell_data) {
+    if(data == NULL)
+        return 1;
+    if(fseek(data, index, SEEK_SET) != 0)
+        return 1;
 
-
-    if(data == NULL) {
-        ret = OUTPUT_CANT_BE_OPENED;
-        goto close;
-    }
-
-    if(fseek(data, index, SEEK_SET) != 0) {
-        ret = OUTPUT_READ_ERROR;
-        goto close;
-    }
     *cell_data = fgetc(data);
-    if(*cell_data == EOF)
-    {
-        ret = OUTPUT_READ_ERROR;
-        goto close;
-    }
-
-
-close:
-    return ret;
+    if (feof(data) || ferror(data))
+        return 1;
+    return 0;
 }
 
-enum PARSE_MAZE_RETURN_CODE set_cell_parent(FILE *data, const int index, const enum DIRECTIONS parent) {
-    enum PARSE_MAZE_RETURN_CODE ret = OK;
+int set_cell_parent(FILE* data,
+                    const int index,
+                    const enum PARENT_DIRECTION parent) {
+    if(fseek(data, index, SEEK_SET) != 0)
+        return 1;
 
-    if(fseek(data, index, SEEK_SET) != 0) {
-        ret = OUTPUT_WRITE_ERROR;
-        goto close;
-    }
-    unsigned char cell_data = fgetc(data);
-    cell_data += parent << 4;
+    char cell_data = fgetc(data);
+    if (feof(data) || ferror(data))
+        return 1;
+    cell_data += parent;
 
-    fseek(data, index, SEEK_SET);
+    if(fseek(data, index, SEEK_SET) != 0)
+        return 1;
     fputc(cell_data, data);
-    if(ferror(data)) {
-        ret = OUTPUT_WRITE_ERROR;
-        goto close;
-    }
+    if(ferror(data))
+        return 1;
 
     return 0;
 }

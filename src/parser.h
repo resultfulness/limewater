@@ -18,19 +18,30 @@ enum PARSE_MAZE_RETURN_CODE {
     OUTPUT_WRITE_ERROR = 22,
 };
 
-enum DIRECTIONS { 
-    N = 0b00000011,
-    E = 0b00000010,
-    W = 0b00000001,
-    S = 0b00000000,
+/* encoding scheme */
+
+#define START_ENCODE_VALUE 128 /* 0b10000000 */
+#define END_ENCODE_VALUE 64    /* 0b01000000 */
+
+enum PARENT_DIRECTION { 
+    PARENT_NORTH = 48, /* 0b00110000 */
+    PARENT_WEST = 32,  /* 0b00100000 */
+    PARENT_EAST = 16,  /* 0b00010000 */
+    PARENT_SOUTH = 0   /* 0b00000000 */
 };
 
-FILE *parse_maze(const char* filename, struct maze* m, enum PARSE_MAZE_RETURN_CODE *err);
-enum PARSE_MAZE_RETURN_CODE get_cell_data(FILE *data, const int index, unsigned char* cell_data);
-enum PARSE_MAZE_RETURN_CODE set_cell_parent(FILE *data, const int index, const enum DIRECTIONS parent);
+enum DIRECTION {
+    NORTH = 8, /* 0b00001000 */
+    EAST  = 4, /* 0b00000100 */
+    SOUTH = 2, /* 0b00000010 */
+    WEST  = 1  /* 0b00000001 */
+};
+
 enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
                                        struct maze* m,
                                        FILE* tmp_file);
+int get_cell_data(FILE *data, const int index, char* cell_data);
+int set_cell_parent(FILE *data, const int index, enum PARENT_DIRECTION parent);
 void print_parse_maze_err(enum PARSE_MAZE_RETURN_CODE ret,
                           char* scriptname,
                           char* input_fn,
