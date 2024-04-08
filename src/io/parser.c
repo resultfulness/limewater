@@ -7,13 +7,12 @@
 #include "parser_err.h"
 #include "parser_reg.h"
 
-enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
-                                       int is_binary,
-                                       struct maze* m,
-                                       FILE* tmpf) {
-    enum PARSE_MAZE_RETURN_CODE ret = OK;
+enum PARSE_MAZE_STATUS parse_maze(struct config cfg,
+                                  struct maze* m,
+                                  FILE* tmpf) {
+    enum PARSE_MAZE_STATUS ret = OK;
 
-    FILE* in = fopen(filename, "r");
+    FILE* in = fopen(cfg.input_file, "r");
     if (in == NULL) {
         ret = INPUT_CANT_BE_OPENED;
         goto out;
@@ -23,7 +22,7 @@ enum PARSE_MAZE_RETURN_CODE parse_maze(const char* filename,
         goto out_close_input;
     }
 
-    if (!is_binary) {
+    if (!cfg.is_input_binary) {
         ret = parse_maze_reg_meta(in, m);
         if (ret != OK)
             goto out_close_input;

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include "parser_err.h"
 
-void print_parse_maze_err(enum PARSE_MAZE_RETURN_CODE ret,
+void print_parse_maze_err(enum PARSE_MAZE_STATUS s,
                           char* scriptname,
                           char* input_fn) {
-    switch (ret) {
+    switch (s) {
         case INPUT_INVALID:
             fprintf(stderr,
                     "%s: plik '%s' jest w błędnym formacie\n",

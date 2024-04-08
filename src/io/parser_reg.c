@@ -6,7 +6,7 @@
 #include "parser_err.h"
 #include "parser_reg.h"
 
-enum PARSE_MAZE_RETURN_CODE parse_maze_reg_meta(FILE* in, struct maze* m) {
+enum PARSE_MAZE_STATUS parse_maze_reg_meta(FILE* in, struct maze* m) {
     char b[BUFSIZE];
     if (fgets(b, BUFSIZE, in) == NULL)
         return INPUT_READ_ERROR;
@@ -34,7 +34,7 @@ enum PARSE_MAZE_RETURN_CODE parse_maze_reg_meta(FILE* in, struct maze* m) {
     return OK;
 }
 
-enum PARSE_MAZE_RETURN_CODE parse_maze_reg_structure(FILE* in, FILE* tmpf) {
+enum PARSE_MAZE_STATUS parse_maze_reg_structure(FILE* in, FILE* tmpf) {
     char b[BUFSIZE],
         bprev[BUFSIZE],
         bnext[BUFSIZE];
