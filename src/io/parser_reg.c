@@ -78,6 +78,8 @@ enum PARSE_MAZE_STATUS parse_maze_reg_structure(FILE* in,
 
                 if (cell & START_ENCODE_VALUE)
                     m->start_index = maze_i * m->width + maze_j;
+                if (cell & END_ENCODE_VALUE)
+                    m->end_index = maze_i * m->width + maze_j;
 
                 fputc(cell, tmpf);
                 if (ferror(tmpf)) 
