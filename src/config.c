@@ -60,6 +60,7 @@ void print_build_config_err(enum BUILD_CONFIG_STATUS s, char* scriptname) {
             fprintf(stderr,
                     "%s: niepoprawne użycie argumentu '-h'\n",
                     scriptname);
+            break;
         case BUILD_CONFIG_OK:
             break;
     }

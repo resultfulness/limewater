@@ -60,12 +60,15 @@ int cell_encode(char* cval,
                        const char e,
                        const char s,
                        const char w) {
-    /* _Bool won't go past 1 no matter what */
-    _Bool ret = 0;
-    ret += cell_handle_adj(cval, n, NORTH);
-    ret += cell_handle_adj(cval, e, EAST);
-    ret += cell_handle_adj(cval, s, SOUTH);
-    ret += cell_handle_adj(cval, w, WEST);
-    return ret;
+    if (cell_handle_adj(cval, n, NORTH) == 1)
+        return 1;
+    if (cell_handle_adj(cval, e, EAST) == 1)
+        return 1;
+    if (cell_handle_adj(cval, s, SOUTH) == 1)
+        return 1;
+    if (cell_handle_adj(cval, w, WEST) == 1)
+        return 1;
+
+    return 0;
 }
 

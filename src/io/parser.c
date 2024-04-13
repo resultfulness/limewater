@@ -27,7 +27,7 @@ enum PARSE_MAZE_STATUS parse_maze(struct config cfg,
         if (ret != OK)
             goto out_close_input;
 
-        ret = parse_maze_reg_structure(in, tmpf);
+        ret = parse_maze_reg_structure(in, m, tmpf);
         if (ret != OK)
             goto out_close_input;
     } else {

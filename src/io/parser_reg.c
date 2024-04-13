@@ -34,7 +34,9 @@ enum PARSE_MAZE_STATUS parse_maze_reg_meta(FILE* in, struct maze* m) {
     return OK;
 }
 
-enum PARSE_MAZE_STATUS parse_maze_reg_structure(FILE* in, FILE* tmpf) {
+enum PARSE_MAZE_STATUS parse_maze_reg_structure(FILE* in,
+                                                struct maze* m,
+                                                FILE* tmpf) {
     char b[BUFSIZE],
         bprev[BUFSIZE],
         bnext[BUFSIZE];
@@ -73,6 +75,9 @@ enum PARSE_MAZE_STATUS parse_maze_reg_structure(FILE* in, FILE* tmpf) {
                 const char adjW = b[b_j - 1];
                 if (cell_encode(&cell, adjN, adjE, adjS, adjW) != 0) 
                     return INPUT_INVALID;
+
+                if (cell & START_ENCODE_VALUE)
+                    m->start_index = maze_i * m->width + maze_j;
 
                 fputc(cell, tmpf);
                 if (ferror(tmpf)) 
