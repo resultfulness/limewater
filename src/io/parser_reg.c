@@ -44,6 +44,7 @@ enum PARSE_STATUS parse_maze_reg_structure(FILE* in,
     int maze_i = 0, // position in maze
     maze_j = 0;
 
+    rewind(in);
     // load initial data into the buffers
     if (fgets(bnext, BUFSIZE, in) == NULL) 
         return PARSE_INPUT_READ_ERROR;

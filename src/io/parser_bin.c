@@ -57,7 +57,6 @@ enum PARSE_STATUS parse_maze_bin(FILE* in, struct maze* m, FILE* tmpf) {
     if ((ret = bin_to_reg(bf, in, tmpf_in)) != PARSE_OK)
         goto out_close_tmpf_in;
 
-    rewind(in);
     ret = parse_maze_reg_structure(tmpf_in, m, tmpf);
 
 out_close_tmpf_in:

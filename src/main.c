@@ -59,7 +59,6 @@ int main(int argc, char** argv) {
             ret = 1;
             goto out_close_in;
         }
-        rewind(in);
         if ((ret = parse_maze_reg_structure(in, maze, tmpf)) != PARSE_OK) {
             print_parse_maze_err(ret, argv[0]);
             ret = 1;
