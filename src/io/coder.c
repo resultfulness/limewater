@@ -25,7 +25,7 @@ int set_cell_parent(FILE* data,
     char cell_data = fgetc(data);
     if (feof(data) || ferror(data))
         return 1;
-    cell_data = cell_data & 79;
+    cell_data = cell_data & 79; // 0b01001111
     cell_data += parent;
     cell_data += VISITED_STATE_VALUE;
 

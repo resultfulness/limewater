@@ -32,7 +32,7 @@ enum DIRECTION {
 int get_cell_data(FILE* data, const int index, char* cell_data);
 
 /**
- * @brief sets parent info for a cell at a given index in a given file
+ * @brief sets parent info and visited state for a cell at a given index in a given file
  *
  * @param data file with encoded cells
  * @param index index of cell to set parent info for
