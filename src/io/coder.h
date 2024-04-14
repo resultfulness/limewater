@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define START_ENCODE_VALUE 128 /* 0b10000000 */
+#define VISITED_STATE_VALUE 128 /* 0b10000000 */
 #define END_ENCODE_VALUE 64    /* 0b01000000 */
 
 enum PARENT_DIRECTION { 

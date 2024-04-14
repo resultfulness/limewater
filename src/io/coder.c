@@ -25,7 +25,9 @@ int set_cell_parent(FILE* data,
     char cell_data = fgetc(data);
     if (feof(data) || ferror(data))
         return 1;
+    cell_data = cell_data & 79;
     cell_data += parent;
+    cell_data += VISITED_STATE_VALUE;
 
     if(fseek(data, index, SEEK_SET) != 0)
         return 1;
@@ -44,7 +46,6 @@ static int cell_handle_adj(char* cval, const char adj, enum DIRECTION d) {
             *cval += d;
             break;
         case 'P':
-            *cval += START_ENCODE_VALUE;
             break;
         case 'K':
             *cval += END_ENCODE_VALUE;

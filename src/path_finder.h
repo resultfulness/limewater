@@ -6,6 +6,6 @@
 #include "./data_structures/queue.h"
 #include "./io/coder.h"
 
-int find_path_in_maze(FILE* in, struct maze* m);
+int find_path_in_maze(FILE* data, struct maze* m);
 
 #endif

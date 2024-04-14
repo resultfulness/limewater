@@ -26,7 +26,6 @@ int dequeue(struct queue** queue_addr) {
     struct queue* queue = *queue_addr;
     int front_customer = queue->value;
 
-    struct queue* queue_copy = queue;
     queue = queue->next;
 
     *queue_addr = queue;

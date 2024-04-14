@@ -121,7 +121,7 @@ void print_path(FILE *data, struct maze *m) {
         }
         previous_direction = direction;
         direction = cell_data & PARENT_NORTH;
-        if(direction != previous_direction) {
+        if(direction != previous_direction && cell_index != m->end_index) {
             printf("FORWARD %d\n", move_counter);
             printf("%s\n", get_turn(previous_direction, direction));
             move_counter = 1;

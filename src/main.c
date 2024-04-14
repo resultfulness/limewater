@@ -6,6 +6,8 @@
 #include "io/parser_bin.h"
 #include "io/parser_err.h"
 #include "io/parser_reg.h"
+#include "path_finder.h"
+#include "io/out_reg.h"
 
 int main(int argc, char** argv) {
     int ret = 0;
@@ -71,6 +73,9 @@ int main(int argc, char** argv) {
             goto out_close_in;
         }
     }
+
+    find_path_in_maze(tmpf, maze);
+    print_path(tmpf, maze);
 
 out_close_in:
     fclose(in);
