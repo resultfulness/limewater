@@ -8,6 +8,13 @@ enum PARSE_STATUS {
     PARSE_OUTPUT_WRITE_ERROR = 3
 };
 
+/**
+ * @brief prints error message to stdout, based on the status normally returned
+ * during the maze parsing part of the program
+ *
+ * @param s status returned during maze parsing
+ * @param scriptname name of the program
+ */
 void print_parse_maze_err(enum PARSE_STATUS s,
                           char* scriptname);
 
