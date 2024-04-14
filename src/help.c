@@ -1,5 +1,6 @@
-#include "help.h"
 #include <stdio.h>
+
+#include "help.h"
 
 void print_help(char* scriptname) {
     printf("Użycie: %s PLIK_LABIRYNTU [OPCJE]\n", scriptname);
