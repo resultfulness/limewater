@@ -3,11 +3,12 @@
 
 #include "config.h"
 #include "help.h"
+#include "io/out_bin.h"
+#include "io/out_reg.h"
 #include "io/parser_bin.h"
 #include "io/parser_err.h"
 #include "io/parser_reg.h"
 #include "path_finder.h"
-#include "io/out_reg.h"
 
 int main(int argc, char** argv) {
     int ret = 0;
@@ -45,7 +46,7 @@ int main(int argc, char** argv) {
         goto out_free_cfg;
     }
     
-    FILE* in = fopen(cfg->input_file, "r");
+    FILE* in = fopen(cfg->input_file, "r+");
     if (in == NULL) {
         fprintf(stderr,
                 "%s: nie udało się otworzyć pliku '%s'\n",
@@ -55,6 +56,7 @@ int main(int argc, char** argv) {
         goto out_close_tmp;
     }
 
+    int sol_offset = -1;
     if (!cfg->is_input_binary) {
         if ((ret = parse_maze_reg_meta(in, maze)) != PARSE_OK) {
             print_parse_maze_err(ret, argv[0]);
@@ -67,7 +69,7 @@ int main(int argc, char** argv) {
             goto out_close_in;
         }
     } else {
-        if ((ret = parse_maze_bin(in, maze, tmpf)) != PARSE_OK) {
+        if ((ret = parse_maze_bin(in, maze, tmpf, &sol_offset)) != PARSE_OK) {
             print_parse_maze_err(ret, argv[0]);
             ret = 1;
             goto out_close_in;
@@ -75,7 +77,16 @@ int main(int argc, char** argv) {
     }
 
     find_path_in_maze(tmpf, maze);
-    print_path(tmpf, maze);
+    reverse_path(tmpf, maze);
+
+    if (!cfg->is_input_binary) {
+        print_path(tmpf, maze);
+    } else if (sol_offset > 0) {
+        if (bin_update_with_sol(in, tmpf, *maze, sol_offset) != 0) {
+            ret = 1;
+            goto out_close_in;
+        }
+    }
 
 out_close_in:
     fclose(in);

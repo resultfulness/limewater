@@ -27,8 +27,13 @@ enum PARSE_STATUS bin_to_reg(struct bin_format bf, FILE* in, FILE* tmpf_in);
  * @param in binary input file
  * @param m maze structure for maze metadata
  * @param tmpf file where the encoded maze will be stored
+ * @param sol_offset solution offset for use later on in printing the solution
+ * out
  * @return PARSE_STATUS error enum
  */
-enum PARSE_STATUS parse_maze_bin(FILE* in, struct maze* m, FILE* tmpf);
+enum PARSE_STATUS parse_maze_bin(FILE* in,
+                                 struct maze* m,
+                                 FILE* tmpf,
+                                 int* sol_offset);
 
 #endif

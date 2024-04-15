@@ -1,5 +1,5 @@
 #ifndef _OUT_REG_H_
-#define _OUT_REH_H_
+#define _OUT_REG_H_
 
 #include <stdio.h>
 #include "../maze.h"

@@ -78,8 +78,6 @@ void reverse_path(FILE *data, struct maze *m) {
 }
 
 void print_path(FILE *data, struct maze *m) {
-    reverse_path(data, m);
-
     enum PARENT_DIRECTION direction, previous_direction;
     int cell_index = m->start_index, move_counter = 1;
     char cell_data;

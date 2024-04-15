@@ -34,7 +34,10 @@ enum PARSE_STATUS bin_to_reg(struct bin_format bf, FILE* in, FILE* tmpf_in) {
     return PARSE_OK;
 }
 
-enum PARSE_STATUS parse_maze_bin(FILE* in, struct maze* m, FILE* tmpf) {
+enum PARSE_STATUS parse_maze_bin(FILE* in,
+                                 struct maze* m,
+                                 FILE* tmpf,
+                                 int* sol_offset) {
     int ret = PARSE_OK;
     struct bin_format bf;
 
@@ -61,5 +64,7 @@ enum PARSE_STATUS parse_maze_bin(FILE* in, struct maze* m, FILE* tmpf) {
 
 out_close_tmpf_in:
     fclose(tmpf_in);
+
+    *sol_offset = bf.HEADER.SOFF;
     return ret;
 }
