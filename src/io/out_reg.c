@@ -77,7 +77,7 @@ void reverse_path(FILE *data, struct maze *m) {
     set_cell_parent(data, cell_index, direction);
 }
 
-void print_path(FILE *data, struct maze *m) {
+void print_path(FILE *data, struct maze *m, FILE *out) {
     enum PARENT_DIRECTION direction, previous_direction;
     int cell_index = m->start_index, move_counter = 1;
     char cell_data;
@@ -85,15 +85,17 @@ void print_path(FILE *data, struct maze *m) {
     previous_direction = PARENT_WEST;
     direction = cell_data & PARENT_NORTH;
 
+    fprintf(out, "START\n");
+
     switch(direction) {
         case PARENT_NORTH:
-            printf("TURNLEFT\n");
+            fprintf(out, "TURNLEFT\n");
             break;
         case PARENT_SOUTH:
-            printf("TURNRIGHT\n");
+            fprintf(out, "TURNRIGHT\n");
             break;
         case PARENT_EAST:
-            printf("TURNRIGHT\nTURNRIGHT\n");
+            fprintf(out, "TURNRIGHT\nTURNRIGHT\n");
             break;
         default:
             break;
@@ -114,18 +116,19 @@ void print_path(FILE *data, struct maze *m) {
                 break;
         }
         if(get_cell_data(data, cell_index, &cell_data) != 0) {
-            printf("Solution file corrupted\n");
+            fprintf(out, "Solution file corrupted\n");
             return;
         }
         previous_direction = direction;
         direction = cell_data & PARENT_NORTH;
         if(direction != previous_direction && cell_index != m->end_index) {
-            printf("FORWARD %d\n", move_counter);
-            printf("%s\n", get_turn(previous_direction, direction));
+            fprintf(out, "FORWARD %d\n", move_counter);
+            fprintf(out, "%s\n", get_turn(previous_direction, direction));
             move_counter = 1;
         }
         else
             move_counter++;
     }
-    printf("FORWARD %d\n", move_counter);
+    fprintf(out, "FORWARD %d\n", move_counter);
+    fprintf(out, "STOP\n");
 }

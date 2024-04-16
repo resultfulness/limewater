@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
     reverse_path(tmpf, maze);
 
     if (!cfg->is_input_binary) {
-        print_path(tmpf, maze);
+        print_path(tmpf, maze, stdout);
     } else if (sol_offset > 0) {
         if (bin_update_with_sol(in, tmpf, *maze, sol_offset) != 0) {
             ret = 1;

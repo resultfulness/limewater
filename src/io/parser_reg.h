@@ -6,7 +6,7 @@
 #include "../maze.h"
 #include "parser_err.h"
 
-#define BUFSIZE 1024*2+1
+#define BUFSIZE 1025*2+1
 
 /**
  * @brief uses the input file to fill the maze struct fields with metadata about

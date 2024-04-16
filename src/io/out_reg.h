@@ -22,7 +22,8 @@ void reverse_path(FILE *data, struct maze *m);
  * 
  * @param data  file where the encoded maze is stored
  * @param m     maze structure with maze metadata  
+ * @param out   file to which the output will be printed (or stdout)
  */
-void print_path(FILE *data, struct maze *m);
+void print_path(FILE *data, struct maze *m, FILE *out);
 
 #endif
